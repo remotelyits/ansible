@@ -1,0 +1,27 @@
+---
+# tasks file for clamav_uninstallation
+
+- name: Un-Install ClamAV package
+  package:
+    name: "{{ item }}"
+    state: "{{ package_state }}"
+  with_items: "{{ clamav_pkgs }}"
+
+- name: Check that the ClamAV/FreshClam Configuration File exists
+  stat:
+    path: "{{ item }}"
+  loop:
+      - /var/run/clamd.scan/clamd.sock
+      - /etc/clamd.d/scan.conf
+      - /etc/freshclam.conf
+      - /lib/systemd/system/clamd-freshclam.service
+  register: stat_result
+
+- name: If the Mentioned files exists, Clean it Up
+  file:
+    path: "{{ item.item }}"
+    state: absent
+  when: (item.stat.exists)
+  loop: "{{ stat_result.results }}"
+  loop_control:
+    label: "{{ item.item }}"
