@@ -1,0 +1,27 @@
+---
+# tasks file for clamav_verification
+
+
+- name: Displaying for the FRESHCLAM service status
+  service_facts:
+  register: service_state
+
+- name: Displaying the FRESHCLAM Status.
+  debug:
+    msg: Displaying the FRESHCLAM Service - {{ service_state.ansible_facts.services["clamd-freshclam.service"].state }}
+
+- name: Displaying the CLAMD SCAN Status.
+  debug:
+    msg: Displaying the CLAMD SCAN Service - {{ service_state.ansible_facts.services["clamd@scan.service"].state }}
+
+- name: To display the scan report
+  command: clamscan --infected --remove --recursive /tmp
+  register: scan_report
+
+- name: To display the scan report - Debug STDOUT
+  set_fact: 
+    dataresult: "{{ scan_report.stdout_lines | to_json }}"
+
+- name: Showing the Scan Report
+  debug:
+    msg: "{{ dataresult }}"
