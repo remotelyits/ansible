@@ -1,0 +1,11 @@
+---
+# vars file for clamav_uninstallation
+
+# Package to be installed (explicit version can be specified here)
+clamav_pkgs: "{{
+  ['clamav', 'clamav-update', 'clamav-scanner-systemd', 'clamav-server', 'clamav-data', 'clamav-filesystem', 'clamav-devel', 'clamav-lib', 'clamav-server-systemd']
+    if ansible_os_family == 'RedHat' and ansible_distribution_major_version | int >= 7
+    else
+  ['clamd'] }}"
+
+package_state: 'absent'
